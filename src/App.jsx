@@ -2,40 +2,45 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeartIcon as Heart } from './components/Icons';
 import { TeddyBear } from './components/TeddyBear';
-// import { cn } from './utils/cn';
 
 function App() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
   const [noButtonStyle, setNoButtonStyle] = useState({ scale: 1, opacity: 1 });
   const [clickCount, setClickCount] = useState(0);
-  const noButtonRef = useRef<HTMLButtonElement>(null);
+  const noButtonRef = useRef(null);
 
   const handleNoHover = () => {
-    if (isSuccess) return;
+    if (isSuccess || !noButtonRef.current) return;
 
-    // Playful dodge logic
-    const randomX = (Math.random() - 0.5) * 200;
-    const randomY = (Math.random() - 0.5) * 200;
-    
-    // Ensure it stays within reasonable bounds but moves away
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const padding = 24; // Margin from screen edges
+
+    const buttonRect = noButtonRef.current.getBoundingClientRect();
+
+    const baseLeft = buttonRect.left - noButtonPos.x;
+    const baseTop = buttonRect.top - noButtonPos.y;
+
+    const targetX = padding + Math.random() * (viewportWidth - buttonRect.width - padding * 2);
+    const targetY = padding + Math.random() * (viewportHeight - buttonRect.height - padding * 2);
+
     setNoButtonPos({
-      x: noButtonPos.x + (randomX > 0 ? 100 : -100) + randomX,
-      y: noButtonPos.y + (randomY > 0 ? 100 : -100) + randomY,
+      x: targetX - baseLeft,
+      y: targetY - baseTop,
     });
 
-    // Shrink and fade on repeated attempts
-    if (clickCount > 2) {
-      setNoButtonStyle(prev => ({
-        scale: Math.max(0.5, prev.scale - 0.1),
-        opacity: Math.max(0.3, prev.opacity - 0.1),
+    if (clickCount >= 1) {
+      setNoButtonStyle((prev) => ({
+        scale: Math.max(0.3, prev.scale - 0.08),
+        opacity: Math.max(0.4, prev.opacity - 0.05),
       }));
     }
   };
 
   const handleNoClick = () => {
     setClickCount(prev => prev + 1);
-    handleNoHover(); // Dodge on click too
+    handleNoHover();
   };
 
   const handleYes = () => {
@@ -54,7 +59,7 @@ function App() {
             className="flex flex-col items-center gap-8 z-10"
           >
             <TeddyBear isSuccess={false} />
-            
+
             <h1 className="text-4xl md:text-6xl font-bold text-center text-pink-600 drop-shadow-sm px-4">
               Will you be my Valentine?
             </h1>
@@ -64,23 +69,24 @@ function App() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleYes}
-                className="bg-valentine-red text-white px-8 py-3 rounded-full text-xl font-semibold shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2"
+                className="bg-valentine-red text-white px-8 py-3 rounded-full text-xl font-semibold shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2 cursor-pointer"
               >
                 Yes 💖
               </motion.button>
 
               <motion.button
                 ref={noButtonRef}
-                animate={{ 
-                  x: noButtonPos.x, 
+                tabIndex={-1}
+                animate={{
+                  x: noButtonPos.x,
                   y: noButtonPos.y,
                   scale: noButtonStyle.scale,
-                  opacity: noButtonStyle.opacity
+                  opacity: noButtonStyle.opacity,
                 }}
                 transition={{ type: "spring", stiffness: 150, damping: 15 }}
                 onMouseEnter={handleNoHover}
                 onClick={handleNoClick}
-                className="bg-white text-gray-600 px-8 py-3 rounded-full text-xl font-semibold shadow-md border border-gray-100 flex items-center gap-2"
+                className="bg-white text-gray-600 px-8 py-3 rounded-full text-xl font-semibold shadow-md border border-gray-100 flex items-center gap-2 cursor-pointer"
               >
                 No 😢
               </motion.button>
@@ -94,8 +100,8 @@ function App() {
             className="flex flex-col items-center gap-8 z-10"
           >
             <TeddyBear isSuccess={true} />
-            
-            <motion.h1 
+
+            <motion.h1
               initial={{ y: 20 }}
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 2 }}
@@ -116,24 +122,23 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Decorative background elements */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute text-pink-300"
-            initial={{ 
-              x: Math.random() * 100 + "%", 
-              y: Math.random() * 100 + "%" 
+            initial={{
+              x: Math.random() * 100 + "%",
+              y: Math.random() * 100 + "%",
             }}
-            animate={{ 
+            animate={{
               y: [null, "-20px", "20px"],
-              rotate: [0, 45, -45, 0]
+              rotate: [0, 45, -45, 0],
             }}
             transition={{
               duration: 5 + Math.random() * 5,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
           >
             <Heart size={24 + Math.random() * 40} />

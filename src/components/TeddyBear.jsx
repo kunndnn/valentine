@@ -1,10 +1,6 @@
 import { motion } from 'framer-motion';
 
-interface TeddyBearProps {
-  isSuccess: boolean;
-}
-
-export const TeddyBear = ({ isSuccess }: TeddyBearProps) => {
+export const TeddyBear = ({ isSuccess }) => {
   return (
     <div className="relative w-64 h-64 mx-auto">
       <svg

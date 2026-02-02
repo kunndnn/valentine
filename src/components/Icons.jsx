@@ -1,6 +1,4 @@
-
-
-export const HeartIcon = ({ size = 24, fill = "none", className = "" }: { size?: number, fill?: string, className?: string }) => (
+export const HeartIcon = ({ size = 24, fill = "none", className = "" }) => (
   <svg
     width={size}
     height={size}
