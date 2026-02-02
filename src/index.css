@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pastel-pink: #ffe4e6;
+  --color-pastel-blush: #fecdd3;
+  --color-pastel-cream: #fffaf0;
+  --color-valentine-red: #e11d48;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-pastel-cream);
+  color: #1f2937;
+}
